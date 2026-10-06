@@ -156,11 +156,19 @@
     50%     { opacity: 1; }
   }
 
-  /* ---------- music button (kept) ---------- */
-  .music-toggle { border: 0; border-radius: 999px; padding: 10px 15px; background: rgba(255,255,255,.78); color: #b3285a; font: 600 13px/1 -apple-system, "Segoe UI", sans-serif; cursor: pointer; box-shadow: 0 4px 14px rgba(185, 61, 107, .14); }
+  /* ---------- bar bawah: siram + musik, diatur flex supaya tidak pernah tabrakan ---------- */
+  .bottom-bar {
+    position: fixed; left: 0; right: 0; bottom: 16px; z-index: 6;
+    display: flex; gap: 8px; align-items: center; justify-content: center;
+    padding: 0 14px; flex-wrap: wrap;
+    opacity: 0; pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity .5s ease .7s, transform .5s ease .7s;
+  }
+  body.open .bottom-bar { opacity: 1; transform: none; pointer-events: auto; }
+
+  .music-toggle { flex: 0 0 auto; border: 0; border-radius: 999px; padding: 10px 15px; background: rgba(255,255,255,.78); color: #b3285a; font: 600 13px/1 -apple-system, "Segoe UI", sans-serif; cursor: pointer; box-shadow: 0 4px 14px rgba(185, 61, 107, .14); white-space: nowrap; }
   .music-toggle:active { transform: scale(.96); }
-  .music-pill { position: fixed; top: 14px; right: 14px; z-index: 6; opacity: 0; pointer-events: none; transition: opacity .5s ease .9s; }
-  body.open .music-pill { opacity: 1; pointer-events: auto; }
 
   /* ---------- card fades out when the game starts ---------- */
   .card { transition: opacity .7s ease, transform .7s ease; }
@@ -168,21 +176,21 @@
 
   /* ---------- water button ---------- */
   .water-btn {
-    position: fixed; left: 50%; bottom: 18px; z-index: 6;
-    transform: translateX(-50%) translateY(8px);
-    border: 0; border-radius: 999px; padding: 13px 22px;
+    flex: 0 0 auto;
+    border: 0; border-radius: 999px; padding: 13px 20px;
     background: linear-gradient(180deg, #ffffff, #ffe6f0);
     color: #b3285a;
-    font: 700 15px/1 -apple-system, "Segoe UI", Roboto, sans-serif;
+    font: 700 clamp(13px, 3.8vw, 15px)/1 -apple-system, "Segoe UI", Roboto, sans-serif;
+    white-space: nowrap;
     box-shadow: 0 8px 22px rgba(185, 61, 107, .26);
-    opacity: 0; pointer-events: none;
-    transition: opacity .5s ease .7s, transform .5s ease .7s;
+    transition: opacity .5s ease, width .5s ease, padding .5s ease;
   }
-  body.open .water-btn { opacity: 1; transform: translateX(-50%); pointer-events: auto; }
-  .water-btn:active { transform: translateX(-50%) scale(.96); }
-  .water-btn:disabled { opacity: .7; }
-  body.open .water-btn:disabled { opacity: .7; }
-  body.open .water-btn.hide { opacity: 0; pointer-events: none; }
+  .water-btn:active { transform: scale(.96); }
+  .water-btn:disabled { opacity: .75; }
+  .water-btn.hide {
+    opacity: 0; pointer-events: none;
+    width: 0; padding-left: 0; padding-right: 0; border: 0; overflow: hidden;
+  }
 
   /* ---------- final dedication ---------- */
   #dedication {
@@ -231,8 +239,10 @@
 
   <p id="dedication">These flowers are for someone even more beauty than the flowers themselves. ♡</p>
 
-  <button class="water-btn" id="waterBtn" type="button">💧 Siram bunganya</button>
-  <button class="music-toggle music-pill" id="musicToggle" type="button" aria-pressed="false">♫ Music off</button>
+  <div class="bottom-bar">
+    <button class="water-btn" id="waterBtn" type="button">💧 Siram bunganya</button>
+    <button class="music-toggle music-pill" id="musicToggle" type="button" aria-pressed="false">♫ Music off</button>
+  </div>
 
 <script>
 (function () {
@@ -732,7 +742,7 @@
     canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    var band = 92;                                    // ruang untuk tombol siram
+    var band = 108;                                    // ruang untuk tombol siram
     var bw = Math.min(W * 0.44, 158);
     var bh = bw * 0.76;
     var bottom = H - band;
