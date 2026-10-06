@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#ff6f91">
+<meta name="description" content="Ada sesuatu yang menunggu di dalam... tap untuk membukanya 🌷">
+<meta property="og:type" content="website">
+<meta property="og:title" content="For Indira Oktavia 🌹">
+<meta property="og:description" content="Ada sesuatu yang menunggu di dalam... tap untuk membukanya 🌷">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="For Indira Oktavia 🌹">
+<meta name="twitter:description" content="Ada sesuatu yang menunggu di dalam... tap untuk membukanya 🌷">
 <title>For Indira Oktavia 🌹</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -183,7 +190,7 @@
     transform: translateX(-50%) translateY(10px);
     width: 90vw; max-width: 720px; margin: 0; text-align: center;
     font-family: "Segoe Script", "Brush Script MT", "Comic Sans MS", cursive;
-    font-size: clamp(15px, 3.6vw, 21px);
+    font-size: clamp(18px, 5vw, 26px);
     line-height: 1.3; color: #b7165a;
     text-shadow: 0 1px 0 rgba(255,255,255,.95), 0 3px 10px rgba(255,255,255,1), 0 6px 22px rgba(255,255,255,.9);
     opacity: 0; pointer-events: none;
@@ -740,7 +747,11 @@
     var rnd = mulberry32(SEED);
     var cx = bucket.cx;
     var baseY = bucket.top + 10;
-    var tipY = Math.max(164, H * 0.20);               // sisakan ruang untuk teks penutup
+    /* sisakan ruang untuk teks penutup: tinggi teks diukur, bukan angka mati */
+    var dedEl = document.getElementById('dedication');
+    var dedH = dedEl ? dedEl.offsetHeight : 70;
+    var tipY = Math.max(150, H * 0.20, dedH + 92);
+    if (tipY > H * 0.58) tipY = H * 0.58;
     var stemH = Math.max(160, baseY - tipY);
     var spread = Math.min(W * 0.42, 168);
     var fR = bucket.w * 0.175;
