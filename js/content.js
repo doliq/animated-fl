@@ -238,8 +238,8 @@
     easter: {
       word: 'dira',
       title: 'ACCESS GRANTED',
-      lines: ['You type ur name gorgy, such a pretty as an angel👼',
-              'I love you so much, I hope you know that.'],
+      lines: ['You typed your name, Gorgy—you’re such a gorgeous person, just like an angel👼',
+              'I love you, and I hope you know that.'],
       next: 'Back to the world'
     },
 
