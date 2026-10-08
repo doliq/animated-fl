@@ -1,0 +1,3 @@
+Folder ini untuk voice message (assets/audio/voice.mp3).
+Pemutar di Scene 06 hidup otomatis begitu file voice.mp3 ada di sini.
+Selama belum ada, yang tampil hanya transkrip teks dari js/content.js.

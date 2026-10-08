@@ -1,0 +1,140 @@
+/* ============================================================================
+   flower.css — Scene 04 (bunga interaktif) & Scene 08 (final)
+   Gambar bunganya ada di kanvas #flowerCanvas (js/flower.js).
+   ========================================================================== */
+
+.scene--flower { background: transparent; }
+
+/* UI di bawah bunga */
+.flower-ui {
+  position: fixed;
+  left: 50%;
+  bottom: calc(76px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 4;
+  width: min(560px, 92vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  pointer-events: none;
+}
+.flower-ui .btn { pointer-events: auto; }
+
+/* bayangan lembut di belakang teks supaya tetap terbaca di atas batang */
+.flower-ui::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -70px;
+  transform: translateX(-50%);
+  width: 150vw;
+  height: 280px;
+  background: radial-gradient(closest-side, rgba(8, 5, 8, 0.8), rgba(8, 5, 8, 0));
+  pointer-events: none;
+  z-index: -1;
+}
+
+.flower-hint {
+  font-size: 12px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+  animation: pulse 2.8s ease-in-out infinite;
+  transition: opacity 0.6s var(--ease);
+}
+.flower-hint.is-off { opacity: 0; }
+.flower-hint.is-soft {
+  animation: none;
+  opacity: 0.42;
+  letter-spacing: 0.2em;
+}
+
+.flower-lines { display: flex; flex-direction: column; gap: 8px; }
+.flower-lines p {
+  font-family: var(--serif);
+  font-size: clamp(18px, 5.1vw, 26px);
+  line-height: 1.42;
+  color: var(--cream);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+  text-wrap: balance;
+}
+.flower-lines p.is-in { opacity: 1; transform: none; }
+
+#flowerNext {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 1s var(--ease), transform 1s var(--ease);
+}
+#flowerNext.is-in { opacity: 1; transform: none; }
+
+/* ============================================================================
+   Scene 08 — Final
+   ========================================================================== */
+.scene--final {
+  background: radial-gradient(120% 100% at 50% 40%, rgba(12, 7, 10, 0.45), rgba(8, 5, 8, 0.88));
+}
+.scene--final .scene-inner {
+  justify-content: flex-end;
+  padding-top: 48vh;
+  /* lapisan gelap lembut di belakang kalimat penutup supaya tetap terbaca */
+  background: linear-gradient(to top,
+    rgba(6, 4, 6, 0.9) 0%,
+    rgba(6, 4, 6, 0.72) 34%,
+    rgba(6, 4, 6, 0.35) 60%,
+    rgba(6, 4, 6, 0) 82%);
+}
+
+.final-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: min(640px, 92vw);
+}
+
+.final-lines p {
+  font-family: var(--serif);
+  font-size: clamp(17px, 5vw, 25px);
+  line-height: 1.5;
+  color: var(--cream);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1.3s var(--ease), transform 1.3s var(--ease);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
+  text-wrap: balance;
+}
+.final-lines p + p { margin-top: 8px; }
+.final-lines p.is-in { opacity: 1; transform: none; }
+
+.final-love {
+  font-family: var(--serif);
+  font-size: clamp(26px, 7.6vw, 40px);
+  color: var(--pink);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1.4s var(--ease), transform 1.4s var(--ease);
+  text-shadow: 0 0 34px rgba(255, 158, 196, 0.35);
+}
+.final-love.is-in { opacity: 1; transform: none; }
+
+.final-sign {
+  font-family: var(--script);
+  font-size: clamp(18px, 5vw, 24px);
+  color: var(--cream-dim);
+  opacity: 0;
+  transition: opacity 1.4s var(--ease);
+}
+.final-sign.is-in { opacity: 1; }
+
+#replayFinal {
+  margin-top: 10px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
+}
+#replayFinal.is-in { opacity: 1; transform: none; }

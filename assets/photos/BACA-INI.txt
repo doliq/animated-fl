@@ -1,0 +1,4 @@
+# Folder ini untuk foto kenangan (assets/photos/).
+# Taruh file 01.jpg sampai 05.jpg di sini, atau sesuaikan namanya
+# di js/content.js bagian memories.items.
+# Selama fotonya belum ada, kartu kenangan otomatis jadi placeholder.

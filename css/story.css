@@ -1,0 +1,304 @@
+/* ============================================================================
+   story.css — Scene 05 (Our Timeline), Scene 06 (mini games), Scene 07 (voice)
+   ========================================================================== */
+
+/* ---------------- Scene 05 — memory map ---------------- */
+.scene--timeline { background: transparent; }
+
+.map {
+  position: relative;
+  width: min(560px, 94vw);
+  text-align: left;
+  padding: 4px 0;
+}
+
+.map-node {
+  position: relative;
+  display: block;
+  width: 100%;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  padding: 15px 10px 15px 38px;
+  text-align: left;
+  color: var(--cream-soft);
+  font-family: var(--serif);
+  font-size: clamp(16px, 4.5vw, 21px);
+  line-height: 1.35;
+  transition: color 0.4s var(--ease), transform 0.25s var(--ease);
+  touch-action: manipulation;
+}
+.map-node:active { transform: scale(0.99); }
+.map-node::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(248, 236, 223, 0.05), rgba(248, 236, 223, 0.22), rgba(248, 236, 223, 0.05));
+}
+.map-node:first-child::before { top: 50%; }
+.map-node:last-child::before { bottom: 50%; }
+.map-node::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  margin-top: -5.5px;
+  border-radius: 50%;
+  background: #33232c;
+  box-shadow: inset 0 0 0 1px rgba(255, 226, 184, 0.45);
+  transition: background 0.4s var(--ease), box-shadow 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.map-node.is-seen { color: var(--gold); }
+.map-node.is-seen::after {
+  background: var(--pink);
+  box-shadow: 0 0 14px rgba(255, 158, 196, 0.65);
+  transform: scale(1.15);
+}
+.map-node .node-sub {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--sans);
+  font-size: 11.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(248, 236, 223, 0.35);
+}
+
+/* ---------------- Scene 06 — mini games ---------------- */
+.scene--games { background: transparent; }
+
+.game-block {
+  width: min(560px, 94vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.game-block[hidden] { display: none !important; }
+
+.game-title {
+  font-family: var(--serif);
+  font-size: clamp(22px, 6.2vw, 32px);
+  font-weight: 400;
+  color: var(--cream);
+}
+
+.game-note {
+  min-height: 1.4em;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+}
+
+/* find the heart */
+.find-stage {
+  position: relative;
+  width: 100%;
+  height: min(48vh, 380px);
+  border-radius: 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(80% 60% at 50% 0%, rgba(255, 200, 150, 0.10), transparent 60%),
+    linear-gradient(180deg, rgba(42, 28, 40, 0.9), rgba(18, 12, 16, 0.95));
+  border: 1px solid rgba(255, 226, 184, 0.14);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
+  touch-action: manipulation;
+}
+.floater {
+  position: absolute;
+  border: 0;
+  background: none;
+  padding: 0;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45));
+  transition: transform 0.2s var(--ease);
+  will-change: transform;
+}
+.floater:active { transform: scale(0.9); }
+.floater.is-heart { color: #ff6f91; }
+.floater.is-gone { opacity: 0; pointer-events: none; transform: scale(1.6); transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
+
+/* quiz */
+.quiz { width: 100%; }
+.quiz-q {
+  font-family: var(--serif);
+  font-size: clamp(19px, 5.2vw, 25px);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--cream);
+  margin-bottom: 16px;
+  text-align: center;
+}
+.quiz-opts { display: flex; flex-direction: column; gap: 10px; }
+.quiz-opt {
+  border: 1px solid rgba(248, 236, 223, 0.18);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--cream);
+  border-radius: 15px;
+  min-height: var(--tap);
+  padding: 14px 16px;
+  font-size: 15px;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), background 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.quiz-opt:active { transform: scale(0.985); }
+.quiz-opt.is-right { background: rgba(120, 210, 150, 0.16); border-color: rgba(140, 230, 170, 0.6); }
+.quiz-opt.is-wrong { background: rgba(230, 120, 140, 0.14); border-color: rgba(240, 140, 160, 0.55); }
+.quiz-opt:disabled { cursor: default; }
+
+.quiz-feedback {
+  margin-top: 14px;
+  min-height: 1.5em;
+  text-align: center;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--cream-soft);
+}
+.quiz-feedback.is-right { color: #9be3b6; }
+.quiz-feedback.is-wrong { color: #ffb0c0; }
+
+.heart-count {
+  margin-top: 4px;
+  font-size: 15px;
+  color: var(--pink);
+  letter-spacing: 0.04em;
+}
+
+/* beberapa gambar dalam satu memori: ditumpuk rapi, tidak dipotong */
+.sheet-photos {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.sheet-photos .sheet-media { margin-bottom: 0; }
+
+/* kartu yang diisi sendiri oleh penerima */
+.sheet-input {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+.input-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.input-field {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(248, 236, 223, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--cream);
+  font: 400 15.5px/1.55 var(--sans);
+  outline: none;
+  transition: border-color 0.25s var(--ease), background 0.25s var(--ease);
+}
+.input-field::placeholder { color: rgba(248, 236, 223, 0.32); }
+.input-field:focus {
+  border-color: rgba(244, 201, 123, 0.6);
+  background: rgba(255, 255, 255, 0.08);
+}
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.input-note {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--cream-dim);
+  min-height: 1.2em;
+}
+
+/* ---------------- Scene 07 — voice ---------------- */
+.scene--voice { background: transparent; }
+
+.voice-orb {
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  border: 0;
+  cursor: pointer;
+  font-size: 38px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 34% 30%, #ffd9e6, var(--pink) 52%, #b8517d);
+  box-shadow: 0 16px 40px rgba(226, 113, 156, 0.32), inset 0 2px 0 rgba(255, 255, 255, 0.45);
+  transition: transform 0.2s var(--ease);
+  position: relative;
+}
+.voice-orb:active { transform: scale(0.95); }
+.voice-orb::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 158, 196, 0.5);
+  opacity: 0;
+}
+.scene--voice.is-playing .voice-orb::after { animation: ring 1.6s ease-out infinite; }
+@keyframes ring {
+  0%   { opacity: 0.7; transform: scale(0.94); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+
+.voice-track {
+  width: min(420px, 84vw);
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(248, 236, 223, 0.14);
+  overflow: hidden;
+  cursor: pointer;
+}
+.voice-track i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--gold), var(--pink));
+}
+.voice-meta {
+  width: min(420px, 84vw);
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--cream-dim);
+  font-variant-numeric: tabular-nums;
+}
+.voice-note {
+  font-size: 12.5px;
+  color: var(--gold);
+  opacity: 0.9;
+  text-align: center;
+  max-width: 34em;
+}
+.voice-transcript {
+  width: min(520px, 90vw);
+  max-height: 30vh;
+  overflow-y: auto;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--cream-soft);
+  text-align: center;
+}
+.voice-transcript p + p { margin-top: 8px; }
