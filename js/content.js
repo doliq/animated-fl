@@ -207,7 +207,7 @@
           right: 'Correct. And always.',
           wrong: 'Wrong. You owe me one hug.' },
         { q: 'Who is more annoying?',
-          options: ['You', 'Me', 'Equal', 'We take turns'], answer: 1,
+          options: ['You', 'YOU', 'Dira', 'Indira'], answer: 0,
           right: 'Correct, and I own it.',
           wrong: 'Wrong. You owe me one hug.' },
         { q: 'Who fell in love first?',
