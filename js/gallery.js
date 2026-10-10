@@ -56,10 +56,20 @@
     ]);
   }
 
+  /* URL blob: hanya hidup selama halaman ini terbuka. Kalau URL-nya ikut
+     disimpan ke IndexedDB, URL itu sudah mati saat halaman dibuka lagi dan
+     semua strip tampil rusak walau blob-nya masih ada. Jadi: yang disimpan
+     hanya blob, dan URL dibuat ulang di sini — satu URL per id, dipakai ulang
+     selama halaman hidup supaya tidak menumpuk. */
+  var urlCache = {};
+
   function decorate(rows) {
     rows.sort(function (a, b) { return (b.date || 0) - (a.date || 0); });
     for (var i = 0; i < rows.length; i++) {
-      if (!rows[i].url && rows[i].blob) rows[i].url = URL.createObjectURL(rows[i].blob);
+      var r = rows[i];
+      if (!r.blob) continue;
+      if (!urlCache[r.id]) urlCache[r.id] = URL.createObjectURL(r.blob);
+      r.url = urlCache[r.id];
     }
     return rows;
   }
@@ -75,9 +85,13 @@
         url: URL.createObjectURL(blob)
       };
       latestRec = rec;
+      urlCache[rec.id] = rec.url;
       return guard(
         store('readwrite')
-          .then(function (os) { return wrap(os.put(rec)); })
+          .then(function (os) {
+            /* hanya blob/date/id yang disimpan — bukan URL blob: */
+            return wrap(os.put({ id: rec.id, date: rec.date, blob: rec.blob }));
+          })
           .then(function () { return rec; })
           .catch(function () { memory.unshift(rec); return rec; }),
         rec
@@ -105,6 +119,10 @@
     remove: function (id) {
       var i;
       if (latestRec && latestRec.id === id) latestRec = null;
+      if (urlCache[id]) {
+        try { URL.revokeObjectURL(urlCache[id]); } catch (e) {}
+        delete urlCache[id];
+      }
       for (i = 0; i < memory.length; i++) {
         if (memory[i].id === id) {
           if (memory[i].url) URL.revokeObjectURL(memory[i].url);

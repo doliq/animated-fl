@@ -13,6 +13,11 @@
   var seen = {};
   var built = false;
   var mediaObj = null;          /* objek Media yang sedang dibuka */
+  /* Penanda panel & bingkai: jawaban galeri datang belakangan (IndexedDB bisa
+     butuh sampai 4 detik). Tanpa penanda, panel yang sudah ditutup bisa muncul
+     lagi sendiri, bahkan di atas scene lain. */
+  var panelToken = 0;
+  var stripToken = 0;
 
   function root() { return document.querySelector('.scene[data-scene="world"]'); }
   function total() { return (C.world.objects || []).length; }
@@ -148,7 +153,9 @@
     }
 
     if (LOVE.gallery) {
+      var t = ++stripToken;
       LOVE.gallery.latest().then(function (rec) {
+        if (t !== stripToken) return;
         /* database dulu; kalau kosong pakai strip sesi ini yang belum tertulis */
         var url = rec ? rec.url : (LOVE.gallery.peek() ? LOVE.gallery.peek().url : '');
         apply(url);
@@ -170,6 +177,7 @@
 
   /* langkah 1: dua pilihan */
   function openMedia() {
+    var t = ++panelToken;
     var vids = (mediaObj && mediaObj.videos) || [];
     var body = '<div class="sheet-choices">' +
       '<button class="choice" type="button" data-media-view="photo">' +
@@ -187,6 +195,7 @@
 
     if (LOVE.gallery) {
       LOVE.gallery.count().then(function (n) {
+        if (t !== panelToken || S.current() !== 'world') return;
         var c = document.querySelector('[data-photo-count]');
         if (c) c.textContent = n + ' ' + (n === 1 ? (M().countOne || 'strip') : (M().countMany || 'strips'));
       });
@@ -198,12 +207,15 @@
 
   /* langkah 2a: galeri strip photobooth */
   function showPhotos() {
+    var t = ++panelToken;
     ui.showSheet('', '<p class="sheet-loading">…</p>', backFoot());
     if (!LOVE.gallery) {
       ui.showSheet('', '<p class="sheet-empty">' + esc(M().empty || '') + '</p>', backFoot());
       return;
     }
     LOVE.gallery.list().then(function (rows) {
+      /* panel sudah ditutup / diganti, atau scene sudah ditinggalkan */
+      if (t !== panelToken || S.current() !== 'world') return;
       if (!rows.length) {
         ui.showSheet('', '<p class="sheet-empty">' + esc(M().empty || '') + '</p>', backFoot());
         return;
@@ -224,6 +236,7 @@
 
   /* langkah 2b: daftar video */
   function showVideos() {
+    panelToken++;
     var o = mediaObj;
     var vids = (o && o.videos) || [];
     if (!vids.length) {
@@ -246,6 +259,7 @@
 
   /* panel untuk benda non-media (rak film & pot bunga) */
   function open(o, node) {
+    panelToken++;
     A.sfx.pop();
     node.classList.add('is-seen');
     if (!seen[o.id]) { seen[o.id] = true; update(); }
@@ -304,8 +318,11 @@
     if (del) {
       A.sfx.pop();
       var id = del.getAttribute('data-del-strip');
+      var dels = panelToken;
       if (LOVE.gallery) {
         LOVE.gallery.remove(id).then(function () {
+          /* panel sudah ditutup, atau scene sudah ditinggalkan */
+          if (dels !== panelToken || S.current() !== 'world') return;
           showPhotos();
           refreshStrip();
         });
@@ -336,8 +353,14 @@
       refreshStrip();
       update();
     },
-    onLeave: function () { ui.hideSheet(); },
+    onLeave: function () {
+      /* batalkan jawaban galeri yang masih menggantung */
+      panelToken++;
+      stripToken++;
+      ui.hideSheet();
+    },
     onReplay: function () {
+      panelToken++;
       seen = {};
       var el = root();
       var props = el ? el.querySelectorAll('.prop') : [];

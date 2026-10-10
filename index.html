@@ -175,18 +175,14 @@
       </div>
     </section>
 
-    <!-- ============ 07 — Voice message ============ -->
-    <section class="scene scene--voice" data-scene="voice" aria-label="Voice message">
+    <!-- ============ 07 — Little notes (pengganti voice message) ============ -->
+    <section class="scene scene--voice" data-scene="voice" aria-label="Little notes">
       <div class="scene-inner">
         <h1 class="title reveal" data-voice-title></h1>
         <p class="lede reveal" data-voice-hint></p>
-        <button class="voice-orb" type="button" data-voice-play aria-label="Play">🎧</button>
-        <div class="voice-track" role="slider" aria-label="position"><i></i></div>
-        <div class="voice-meta"><span class="voice-now">0:00</span><span class="voice-dur">--:--</span></div>
-        <p class="voice-note" hidden></p>
-        <button class="link-btn" type="button" data-voice-words></button>
-        <div class="voice-transcript" hidden></div>
-        <button class="btn btn--ghost" type="button" data-voice-next>Last part</button>
+        <div class="note-list" aria-live="polite"></div>
+        <button class="note-tap" type="button" data-note-tap aria-label="Next"></button>
+        <button class="btn btn--ghost" type="button" data-voice-next hidden></button>
       </div>
     </section>
 

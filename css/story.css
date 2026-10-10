@@ -302,3 +302,39 @@
   text-align: center;
 }
 .voice-transcript p + p { margin-top: 8px; }
+
+/* ---------------- Scene 07 — little notes (pengganti voice message) ---------------- */
+.note-list {
+  width: min(520px, 90vw);
+  min-height: 9em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+}
+.note-line {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--cream-soft);
+  animation: noteIn 0.6s var(--ease) both;
+}
+@keyframes noteIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+.note-tap {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  border: 0;
+  cursor: pointer;
+  font-size: 30px;
+  color: #fff;
+  background: radial-gradient(circle at 34% 30%, #ffd9e6, var(--pink) 52%, #b8517d);
+  box-shadow: 0 14px 34px rgba(226, 113, 156, 0.32), inset 0 2px 0 rgba(255, 255, 255, 0.45);
+  transition: transform 0.2s var(--ease);
+}
+.note-tap::before { content: "♡"; }
+.note-tap:active { transform: scale(0.94); }

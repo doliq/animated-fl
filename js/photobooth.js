@@ -22,6 +22,7 @@
   var frameEl, tintEl, captionEl;
 
   var stream = null;
+  var cameraGen = 0;            // naik tiap kali kamera ditutup: membatalkan izin yang masih menggantung
   var filterIdx = 0, frameIdx = 0;
   var shots = [];               // canvas per foto
   var capturing = false;
@@ -186,15 +187,40 @@
     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
   }
 
+  function stopTracks(s) {
+    if (!s) return;
+    var tracks = s.getTracks ? s.getTracks() : [];
+    for (var i = 0; i < tracks.length; i++) { try { tracks[i].stop(); } catch (e) {} }
+  }
+
+  function hasLiveStream() {
+    if (!stream || !stream.getTracks) return false;
+    var tracks = stream.getTracks();
+    for (var i = 0; i < tracks.length; i++) {
+      if (tracks[i].readyState === 'live') return true;
+    }
+    return false;
+  }
+
   function openCamera() {
     if (!cameraSupported()) {
       setStatus(C.photobooth.cameraDenied, true);
       return Promise.resolve(false);
     }
+    /* kamera yang sudah hidup dipakai ulang. Dulu tiap panggilan membuat stream
+       baru tanpa menghentikan yang lama, jadi lampu kamera tetap menyala dan di
+       Android permintaan kedua bisa gagal ("No camera here" padahal ada). */
+    if (hasLiveStream()) return Promise.resolve(true);
+    closeCamera();                 /* sisa stream yang sudah mati: bereskan dulu */
+
+    var gen = cameraGen;
     return navigator.mediaDevices.getUserMedia({
       video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } },
       audio: false
     }).then(function (s) {
+      /* scene sudah ditinggalkan (atau kamera ditutup) selagi izin diminta:
+         jangan pakai stream-nya, langsung hentikan */
+      if (gen !== cameraGen) { stopTracks(s); return false; }
       stream = s;
       if (video) {
         video.srcObject = s;
@@ -205,6 +231,7 @@
       }
       return true;
     }).catch(function () {
+      if (gen !== cameraGen) return false;
       setStatus(C.photobooth.cameraDenied, true);
       if (pickBtn) pickBtn.classList.add('is-highlight');
       return false;
@@ -212,11 +239,9 @@
   }
 
   function closeCamera() {
-    if (stream) {
-      var tracks = stream.getTracks ? stream.getTracks() : [];
-      for (var i = 0; i < tracks.length; i++) tracks[i].stop();
-      stream = null;
-    }
+    cameraGen++;                   /* batalkan permintaan kamera yang masih jalan */
+    stopTracks(stream);
+    stream = null;
     if (video) video.srcObject = null;
   }
 
@@ -232,6 +257,8 @@
 
     openCamera().then(function (ok) {
       if (!ok) return;
+      /* izin kamera bisa selesai setelah scene ditinggalkan */
+      if (S.current() !== 'photobooth') { closeCamera(); return; }
       capturing = true;
       if (startBtn) startBtn.disabled = true;
       shootSequence(0);
@@ -240,10 +267,16 @@
 
   function shootSequence(n) {
     var P = C.photobooth;
+    if (S.current() !== 'photobooth') {
+      capturing = false;
+      closeCamera();
+      return;
+    }
     if (n >= P.shots) {
       capturing = false;
       if (startBtn) startBtn.disabled = false;
       if (poseEl) poseEl.textContent = '';
+      closeCamera();               /* jepretan selesai: kamera tidak perlu menyala lagi */
       compose();
       return;
     }
@@ -329,12 +362,17 @@
     if (!files.length) return;
     A.unlock();
     setStatus('Preparing photos…');
-    var pending = files.length;
     var max = C.photobooth.shots;
+    /* hanya tiga berkas pertama yang dipakai, dan hitungannya harus mengikuti
+       jumlah itu. Dulu `pending` menghitung semua berkas yang dipilih, jadi
+       memilih lebih dari tiga membuat panel berhenti di "Preparing photos…". */
+    var picked = files.slice(0, max);
+    var pending = picked.length;
     shots = [];
     updateDots();
+    closeCamera();                 /* jalur galeri: kamera tidak diperlukan lagi */
 
-    files.slice(0, max).forEach(function (file) {
+    picked.forEach(function (file) {
       var url = URL.createObjectURL(file);
       var img = new Image();
       img.onload = function () {

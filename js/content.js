@@ -219,17 +219,17 @@
       next: 'One more thing'
     },
 
-    /* ---------- Scene 07 — Voice message ---------- */
+    /* ---------- Scene 07 — Little notes (pengganti voice message) ---------- */
     voice: {
-      title: 'Listen to this.',
-      hint: 'Put your headphones on.',
-      play: '🎧  Listen',
-      transcriptToggle: 'Words',
-      file: 'assets/audio/voice.mp3',
-      missing: 'Not recorded yet. Drop it in assets/audio/voice.mp3.',
-      transcript: [
-        'No recording yet — this text is just a placeholder.',
-        'When you put the file in assets/audio/voice.mp3, this part comes alive.'
+      title: 'A few things I love about you.',
+      hint: 'Tap the heart, one at a time.',
+      tap: '♡',
+      lines: [
+        'The way you laugh at small things.',
+        'How you remember the little details.',
+        'How you make ordinary days feel special.',
+        'The way you care, even when you do not say it out loud.',
+        'That you are you, and there is no one like you.'
       ],
       next: 'Last part'
     },
@@ -238,8 +238,8 @@
     easter: {
       word: 'dira',
       title: 'ACCESS GRANTED',
-      lines: ['You typed your name, Gorgy—you’re such a gorgeous person, just like an angel👼',
-              'I love you, and I hope you know that.'],
+      lines: ['You type ur name gorgy, such a pretty as an angel👼',
+              'I love you so much, I hope you know that.'],
       next: 'Back to the world'
     },
 

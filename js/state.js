@@ -135,6 +135,17 @@
   };
 
   /* ---------------- helper UI bersama ---------------- */
+  /* Video/audio di dalam panel harus dihentikan saat panel ditutup atau isinya
+     diganti. Kalau tidak, suaranya jalan terus padahal panelnya sudah hilang
+     (tidak ada kontrol yang bisa dijangkau) dan bisa bocor ke scene lain. */
+  function stopSheetMedia(sheet) {
+    if (!sheet) return;
+    var media = sheet.querySelectorAll('video, audio');
+    for (var i = 0; i < media.length; i++) {
+      try { media[i].pause(); } catch (e) {}
+    }
+  }
+
   var ui = {
     el: function (id) { return document.getElementById(id); },
     /* munculkan elemen .reveal satu per satu */
@@ -155,6 +166,7 @@
       var sheet = document.getElementById('sheet');
       var scrim = document.getElementById('sheetScrim');
       if (!sheet) return;
+      stopSheetMedia(sheet);
       var t = sheet.querySelector('.sheet-title');
       var b = sheet.querySelector('.sheet-body');
       var f = sheet.querySelector('.sheet-foot');
@@ -169,6 +181,7 @@
     hideSheet: function () {
       var sheet = document.getElementById('sheet');
       var scrim = document.getElementById('sheetScrim');
+      stopSheetMedia(sheet);
       if (sheet) sheet.classList.remove('is-open');
       if (scrim) scrim.classList.remove('is-open');
     },

@@ -3,7 +3,7 @@
 Situs hadiah digital: 8 scene berurutan, teks seminimal mungkin, bahasa Inggris.
 
 **Alur:** surat digital → **photobooth** (3 foto jadi photo strip) → ruangan kecil yang bisa ditap →
-bunga interaktif (tap 3× sampai mekar) → our timeline → mini game → voice message → pesan penutup.
+bunga interaktif (tap 3× sampai mekar) → our timeline → mini game → catatan kecil → pesan penutup.
 Ada dua pesan rahasia yang bisa ditemukan.
 
 HTML + CSS + JS vanilla, tanpa backend, siap ditaruh di GitHub Pages.
@@ -32,7 +32,7 @@ Kalau halaman dibuka dengan klik dua kali (`file://`), kamera tidak bisa dan oto
 
 1. **Foto kenangan** → `assets/photos/01.jpg` … `05.jpg` (atau ubah nama di `timeline.nodes`).
    Belum ada pun aman: panel memunculkan ceritanya saja, tanpa gambar rusak.
-2. **Voice message** → `assets/audio/voice.mp3`.
+2. **Catatan kecil** (scene 07) → daftar kalimat di `js/content.js` → `voice.lines`. Tanpa rekaman.
 3. **Lagu** → `assets/music/lagu.mp3` (sudah terisi).
 4. Nama panggilan, tiga kalimat pembuka, pesan 6 objek ruangan, dua baris setelah bunga mekar,
    lima kenangan, pertanyaan mini game, dan empat baris penutup — semuanya di `js/content.js`.
@@ -67,7 +67,7 @@ personal, bukan seperti template.
 ## Deploy ke GitHub Pages
 
 > ⚠️ Kalau repositorinya **publik**, semua isi `assets/` ikut publik — termasuk lagu, foto,
-> voice message, dan tiga video di `assets/video/`. Kalau tidak mau, pakai repositori privat
+> dan tiga video di `assets/video/`. Kalau tidak mau, pakai repositori privat
 > dengan GitHub Pages privat, atau hosting sendiri.
 
 1. Buat repositori baru, misal `untuk-dira`.

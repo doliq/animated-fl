@@ -1,23 +1,34 @@
 /* ============================================================================
-   voice.js — Scene 07: "Listen to this." → "Put your headphones on." → suara.
-   Transkrip disembunyikan di balik tombol kecil "words".
+   voice.js — Scene 07: kalimat pendek yang muncul satu per satu setiap
+   tombol ♡ diketuk. (Menggantikan voice message; tanpa file audio.)
+   Teks ada di js/content.js → voice.lines.
    ========================================================================== */
 (function () {
   var LOVE = window.LOVE = window.LOVE || {};
   var C = window.LOVE_CONTENT;
-  var S = LOVE.state, A = LOVE.audio, ui = LOVE.ui;
-  var esc = ui.esc;
+  var S = LOVE.state, A = LOVE.audio;
 
   var V = C.voice;
-  var audio = null;
-  var ready = false;
   var built = false;
+  var shown = 0;
 
   function root() { return document.querySelector('.scene[data-scene="voice"]'); }
-  function fmt(t) {
-    if (!isFinite(t) || t < 0) t = 0;
-    var m = Math.floor(t / 60), s = Math.floor(t % 60);
-    return m + ':' + (s < 10 ? '0' : '') + s;
+
+  function addLine(text) {
+    var list = root().querySelector('.note-list');
+    var p = document.createElement('p');
+    p.className = 'note-line';
+    p.textContent = text;
+    list.appendChild(p);
+  }
+
+  function setState() {
+    var el = root();
+    var tap = el.querySelector('[data-note-tap]');
+    var next = el.querySelector('[data-voice-next]');
+    var done = shown >= V.lines.length;
+    tap.hidden = done;
+    next.hidden = !done;
   }
 
   function build() {
@@ -27,81 +38,23 @@
     el.querySelector('[data-voice-title]').textContent = V.title;
     el.querySelector('[data-voice-hint]').textContent = V.hint;
 
-    var orb = el.querySelector('[data-voice-play]');
-    var track = el.querySelector('.voice-track');
-    var now = el.querySelector('.voice-now');
-    var dur = el.querySelector('.voice-dur');
-    var note = el.querySelector('.voice-note');
-    var words = el.querySelector('[data-voice-words]');
-    var transcript = el.querySelector('.voice-transcript');
+    var tap = el.querySelector('[data-note-tap]');
     var next = el.querySelector('[data-voice-next]');
-
-    words.textContent = V.transcriptToggle;
+    tap.textContent = V.tap;
     next.textContent = V.next;
-    var html = '';
-    for (var i = 0; i < V.transcript.length; i++) html += '<p>' + esc(V.transcript[i]) + '</p>';
-    transcript.innerHTML = html;
 
-    audio = new Audio();
-    audio.preload = 'metadata';
-    audio.src = V.file;
+    /* sudah pernah selesai: tampilkan semua kalimat langsung */
+    if (S.isDone('voiceUnlocked')) shown = V.lines.length;
+    for (var i = 0; i < shown; i++) addLine(V.lines[i]);
 
-    function missing() {
-      ready = false;
-      note.hidden = false;
-      note.textContent = V.missing;
-      orb.textContent = '🎧';
-      dur.textContent = '--:--';
-    }
-
-    audio.addEventListener('loadedmetadata', function () {
-      ready = true;
-      note.hidden = true;
-      dur.textContent = fmt(audio.duration);
-    });
-    audio.addEventListener('error', missing);
-    audio.addEventListener('timeupdate', function () {
-      var d = audio.duration || 0;
-      track.querySelector('i').style.width = (d ? (audio.currentTime / d * 100) : 0) + '%';
-      now.textContent = fmt(audio.currentTime);
-    });
-    audio.addEventListener('play', function () {
-      el.classList.add('is-playing');
-      orb.textContent = '❚❚';
-      A.duck(true);
-    });
-    audio.addEventListener('pause', function () {
-      el.classList.remove('is-playing');
-      orb.textContent = '🎧';
-      A.duck(false);
-    });
-    audio.addEventListener('ended', function () {
-      el.classList.remove('is-playing');
-      orb.textContent = '🎧';
-      A.duck(false);
-      S.mark('voiceUnlocked');
-    });
-
-    orb.addEventListener('click', function () {
+    tap.addEventListener('click', function () {
+      if (shown >= V.lines.length) return;
       A.unlock();
-      if (audio.error) { missing(); return; }
-      if (audio.paused) {
-        var pr = audio.play();
-        if (pr && pr.catch) pr.catch(missing);
-      } else {
-        audio.pause();
-      }
-    });
-
-    track.addEventListener('click', function (ev) {
-      if (!ready) return;
-      var r = track.getBoundingClientRect();
-      var ratio = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width));
-      audio.currentTime = ratio * (audio.duration || 0);
-    });
-
-    words.addEventListener('click', function () {
-      transcript.hidden = !transcript.hidden;
+      A.sfx.tap();
+      addLine(V.lines[shown]);
+      shown++;
+      if (shown >= V.lines.length) S.mark('voiceUnlocked');
+      setState();
     });
 
     next.addEventListener('click', function () {
@@ -109,15 +62,18 @@
       S.complete('voiceUnlocked', 'final');
     });
 
-    window.setTimeout(function () { if (!ready) missing(); }, 2600);
     built = true;
+    setState();
   }
 
   LOVE.state.register('voice', {
     onEnter: build,
-    onLeave: function () { if (audio && !audio.paused) audio.pause(); },
+    onLeave: function () {},
     onReplay: function () {
-      if (audio) { try { audio.pause(); audio.currentTime = 0; } catch (e) {} }
+      shown = 0;
+      var el = root();
+      if (el) el.querySelector('.note-list').innerHTML = '';
+      if (built) setState();
     }
   });
 })();

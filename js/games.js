@@ -15,6 +15,7 @@
 
   var built = false;
   var raf = null;
+  var timer = null;
   var floaters = [];
   var stage = null;
   var round = 0;
@@ -27,6 +28,13 @@
   function findBlock() { return root().querySelector('[data-game="find"]'); }
   function quizBlock() { return root().querySelector('[data-game="quiz"]'); }
   function note(txt) { var n = document.getElementById('findNote'); if (n) n.textContent = txt || ''; }
+
+  /* Timer tunggal untuk scene ini. Dulu jeda 900 ms (babak) dan 1500 ms (kuis)
+     tidak pernah dibatalkan, jadi menekan ⟲ di tengah jeda membuat babak/kuis
+     lanjut di scene lain — bahkan menandai gamesDone dan melewati seluruh kuis. */
+  function clearTimer() { if (timer) { window.clearTimeout(timer); timer = null; } }
+  function later(fn, ms) { clearTimer(); timer = window.setTimeout(fn, ms); }
+  function onScene() { return S.current() === 'games'; }
 
   /* ---------------- game 1: find the heart ---------------- */
   function startFind() {
@@ -104,7 +112,8 @@
       A.sfx.correct();
       note(G.findFound);
       stopMove();
-      window.setTimeout(function () {
+      later(function () {
+        if (!onScene()) return;
         round++;
         if (round >= (G.findRounds || 1)) { note(''); startQuiz(); }
         else { note(''); buildRound(); }
@@ -177,7 +186,8 @@
     if (right) { hearts++; A.sfx.correct(); } else { hugs++; A.sfx.wrong(); }
     updateCount();
 
-    window.setTimeout(function () {
+    later(function () {
+      if (!onScene()) return;
       qi++;
       if (qi < G.questions.length) render(); else finish();
     }, 1500);
@@ -191,6 +201,7 @@
   }
 
   function finish() {
+    if (!onScene()) return;            /* jangan menandai selesai dari scene lain */
     updateCount();
     var block = root().querySelector('[data-games-next]');
     if (block) {
